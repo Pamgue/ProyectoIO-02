@@ -33,7 +33,7 @@ def fill(row,col):
         memo_aux = []
         route_aux = []
         for j in range(col):
-            memo_aux.append(0)
+            memo_aux.append(-1000000)
             route_aux.append([0])
         memo.append(memo_aux)
         route.append(route_aux)
@@ -84,8 +84,7 @@ def bottomUpGoldMine(mine,row,col):
             max_route = route[i][row-1]
             j=i
     print('Output: ' + str(max_value))
-    final_route = max_route + [j]
-    final_route = final_route[1:]
+    final_route = max_route[1:] + [j]
     #print(final_route)
     for i in range(0,col):
        print('('+str(final_route[i])+','+str(i)+')')
@@ -98,10 +97,53 @@ bottomUpGoldMine(mine2,4,4)
 
 print('mina 3')
 bottomUpGoldMine(mine3,4,4)
-        
 
-   
 
+def topDownGoldMine(mine,N,M):
+
+    indexes = [-1,0,1]
+    dp,route = fill(N,M)
+
+    for i in range(0,N):
+        dp[i][M-1] = dp_max(mine,dp,i,M-1,N,M)
+    
+    max_value = dp[0][M-1]
+    for i in range(1,N):
+        if(dp[i][M-1] > max_value):
+            max_value = dp[i][M-1]
+            
+    print('Value: '+str(max_value))
+
+
+def dp_max(mine,dp,i,j,N,M):
+    
+    if(i < 0 or i == N): #si no hay diagonales retorne 0
+        return 0
+
+    elif(j == 0):
+        dp[i][j] = mine[i][j]
+        #route[i][j] = [i]
+
+    elif(dp[i][j]!=-1000000):
+        return dp[i][j]
+
+    else:
+
+        left_down = i+1
+        left_up = i-1
+
+        dp[i][j] = mine[i][j] + max(dp_max(mine, dp, left_down, j-1, N, M),dp_max(mine, dp, i, j-1, N, M),dp_max(mine, dp, left_up, j-1, N, M))
+
+    return dp[i][j]
+
+print('Mine 1')
+topDownGoldMine(mine1, 3, 3)
+
+print('Mine 2')
+topDownGoldMine(mine2, 4, 4)
+
+print('Mine 3')
+topDownGoldMine(mine3, 4, 4)
         
 
    
