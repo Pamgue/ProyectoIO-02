@@ -1,7 +1,18 @@
 
 
+mine1 = [[1,3,3],
+        [2,1,4],
+        [0,6,4]]
 
-mine = [[1,3,1,5],[2,2,4,1],[5,0,2,3],[0,6,1,2]]
+mine2 = [[1,3,1,5],
+        [2,2,4,1],
+        [5,0,2,3],
+        [0,6,1,2]]
+
+mine3 = [[10,33,13,15],
+         [22,21,4,1],
+         [5,0,2,3],
+         [0,6,14,2]]
 
 
 def fill(row,col):
@@ -92,7 +103,9 @@ def aux_i(left_up,left,left_down,i):
 
     
 
-bottomUpGoldMine(mine,4,4)
+bottomUpGoldMine(mine1,3,3)
+bottomUpGoldMine(mine2,4,4)
+bottomUpGoldMine(mine3,4,4)
         
 
    
