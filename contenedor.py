@@ -6,25 +6,41 @@ import numpy as np
 import itertools
 
 fileName = ""
-algo = 0
 method = 0
 N = 0
 max_weight =0
 def main(arg):
-    global N
+    global N, max_weight
     if(arg[1]== '1'):
         print("fuerza bruta")
         matrix, origin = processArg(arg)
-        print(origin)
         for j in range(0, num(N)): # se toma el tiempo
             if origin == 2:
                 print("Resultado:")
                 print(knapsack_brute_force(matrix,max_weight))
+
             else:
                 print("Resultado:")
-                setUpKnapSack(matrix)
+                max_weight=matrix[0][0]
+                numMatrix = setUpKnapSack(matrix)
+                print(knapsack_brute_force(numMatrix,max_weight))
     elif(arg[1] == '2'):
         print("bottom up")
+        matrix, origin = processArg(arg)
+        for j in range(0, num(N)): # se toma el tiempo
+            if origin == 2:
+                print("Resultado:")
+                V = dynamicKnapSack(max_weight, matrix, len(matrix))
+                print(V[len(matrix)][max_weight])
+                print(findElements(V, max_weight,len(matrix), matrix))
+
+            else:
+                print("Resultado:")
+                numMatrix = setUpKnapSack(matrix)
+                max_weight=matrix[0][0]
+                V = dynamicKnapSack(max_weight, numMatrix, len(numMatrix))
+                print(V[len(numMatrix)][max_weight])
+                print(findElements(V, max_weight,len(numMatrix), numMatrix))
     elif (arg[1]== '3'):
         print("top-down")   
     else:
@@ -69,7 +85,6 @@ def readFile():
     for line in lines:
         splittedLine = line.split(",")
         listOfLists.append(splittedLine)
-    
     return listOfLists
 
 def removeEndLine(line):
@@ -90,6 +105,7 @@ def formatMatrix(matrix):
     return matrix
 
 def setUpKnapSack(matrix):
+    global max_weight
     currentMatrix = matrix[1:];
     newMatrix=[]
     n = len(currentMatrix)
@@ -98,53 +114,15 @@ def setUpKnapSack(matrix):
         element = [currentId] + i
         currentId +=1
         newMatrix = newMatrix + [element]
-
-    #print(newMatrix)
-    W = matrix[0][0]
-    #n = len(val)
-    print(knapsack_brute_force(newMatrix,W))
+    return newMatrix    
     
-    
-    elemts = []
-
-    '''if (method == 1):
-        #Backtracking case
-        print("KnapSack with backtracking")
-
-        start_time = time.time()
-        result = knapSackBT(val, wt, n - 1, W, elemts) 
-        end_time =  time.time() - start_time
-
-        print(result)
-
-        printElements(matrix, elemts)
-
-        print("Time execution: " + str(end_time))
-    elif(method == 2):
-        #DP case
-        print("KnapSack with dynamic programing")
-
-        start_time = time.time()
-        V = knapSackDP(W, wt, val, n)
-        end_time =  time.time() - start_time
-
-        print(V[n][W])
-
-        elemts = findElements(V, W, n, wt)
-
-        printElements(matrix, elemts)
-
-        print("Time execution: " + str(end_time))
-    else:
-        print("Method not recognized")'''
-
 
 
 def build_items(n, w, v):
     res= []
     for i in range(n):
         res.append((i, rand.randint(w[0], w[1]), rand.randint(v[0], v[1])))
-    print(res)
+
     return res
 
 def powerset(items):
@@ -171,6 +149,40 @@ def knapsack_brute_force(items, max_weight):
     for i in knapsack:
         ids = [i[0]] +ids
     return ids, best_weight, best_value
+
+def dynamicKnapSack(W, items, n):
+    V = []
+
+    for i in range(n + 1):
+        V.append([0] * (W + 1))
+
+    for i in range(1, n + 1): 
+        for w in range(W + 1): 
+            if (items[i - 1][1] > w):
+                V[i][w] = V[i - 1][w]
+            elif (items[i - 1][2] + V[i - 1][w - items[i - 1][1]] > V[i - 1][w]):
+                V[i][w] = items[i - 1][2] + V[i - 1][w - items[i - 1][1]]
+            else: 
+                V[i][w] = V[i - 1][w]
+    return V
+
+
+def findElements(V, W, n, items):
+    k = W
+    peso= 0
+    elements = []
+    for i in range(n, 0, -1):
+        if (V[i][k] != V[i - 1][k]):
+            elements.append(i)
+            i -= 1
+            peso = peso+items[i][1]
+            k -= items[i][1]
+        else:
+            i -= 1
+    
+    return [elements,peso]
+
+
 
 main(sys.argv)
 
