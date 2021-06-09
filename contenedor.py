@@ -9,40 +9,67 @@ fileName = ""
 method = 0
 N = 0
 max_weight =0
+val= []
+wt =[]
 def main(arg):
     global N, max_weight
     if(arg[1]== '1'):
-        print("fuerza bruta")
+        print("Fuerza bruta")
         matrix, origin = processArg(arg)
         for j in range(0, num(N)): # se toma el tiempo
             if origin == 2:
                 print("Resultado:")
-                print(knapsack_brute_force(matrix,max_weight))
-
+                itemsSlected,weigth,optimalValue =knapsack_brute_force(matrix,max_weight)
+                print("Beneficio máximo: " + str(optimalValue))
+                print("Incluidos: "+str(itemsSlected)[1:len(str(itemsSlected))-1])
             else:
                 print("Resultado:")
                 max_weight=matrix[0][0]
                 numMatrix = setUpKnapSack(matrix)
-                print(knapsack_brute_force(numMatrix,max_weight))
+                itemsSlected,weigth,optimalValue =knapsack_brute_force(numMatrix,max_weight)
+                print("Beneficio máximo: " + str(optimalValue))
+                print("Incluidos: "+str(itemsSlected)[1:len(str(itemsSlected))-1])
     elif(arg[1] == '2'):
-        print("bottom up")
+        print("Bottom up")
         matrix, origin = processArg(arg)
         for j in range(0, num(N)): # se toma el tiempo
             if origin == 2:
-                print("Resultado:")
+                
                 V = dynamicKnapSack(max_weight, matrix, len(matrix))
-                print(V[len(matrix)][max_weight])
-                print(findElements(V, max_weight,len(matrix), matrix))
+                print("Beneficio máximo: "+ str(V[len(matrix)][max_weight]))
+                
+                itemSelected,wtf=  findElements(V, max_weight,len(matrix), matrix)
+                print("Incluidos: "+str(itemSelected)[1:len(str(itemSelected))-1])
 
             else:
-                print("Resultado:")
                 numMatrix = setUpKnapSack(matrix)
                 max_weight=matrix[0][0]
                 V = dynamicKnapSack(max_weight, numMatrix, len(numMatrix))
-                print(V[len(numMatrix)][max_weight])
-                print(findElements(V, max_weight,len(numMatrix), numMatrix))
+                print("Beneficio máximo: "+ str(V[len(numMatrix)][max_weight]))
+                
+                itemSelected,wtf=  findElements(V, max_weight,len(numMatrix), numMatrix)
+                print("Incluidos: "+str(itemSelected)[1:len(str(itemSelected))-1])
     elif (arg[1]== '3'):
-        print("top-down")   
+        global val, wt
+        print("top-down") 
+        matrix, origin = processArg(arg)
+        for j in range(0, num(N)): # se toma el tiempo
+            if origin == 2:
+                val, wt = setFormat(matrix)
+                memo = generateMemo(len(val),max_weight+1)
+                print("Beneficio máximo:" + str(topDownKnapsack((len(val)-1), max_weight, memo))) 
+                printChoosen((choosenItems(memo)))
+
+            else:
+                numMatrix = setUpKnapSack(matrix)
+                max_weight = matrix[0][0]
+                
+                wt,val  = setFormat(numMatrix)
+            
+                memo = generateMemo(len(val),max_weight+1)
+                print("Beneficio máximo:" + str(topDownKnapsack((len(val)-1), max_weight, memo))) 
+                printChoosen((choosenItems(memo)))
+                
     else:
         print("Metodo no implementado")
 
@@ -74,7 +101,6 @@ def processArg(datos):
             return build_items(elements, weigth, value),2
 
 
-            #proceso los parametros, genero los pesos en una función 
         else:
             print("Existe un problema con los parametros del sistema")    
 
@@ -91,6 +117,7 @@ def removeEndLine(line):
     if(line.endswith("\n")):
         return line.replace("\n", "")
     return line
+
 def num(s):
     try:
         return int(s)
@@ -167,7 +194,7 @@ def dynamicKnapSack(W, items, n):
     return V
 
 
-def findElements(V, W, n, items):
+def findElements(V,W,n,items):
     k = W
     peso= 0
     elements = []
@@ -183,6 +210,71 @@ def findElements(V, W, n, items):
     return [elements,peso]
 
 
+#Top Down
+def topDownKnapsack(item, capacity, memo):
+    if(capacity < 0):
+        return -(1<<60)
+    elif capacity == 0 or item == 0:
+        return 0
+    elif memo[item][capacity]:
+        return memo[item][capacity]
+    else:
+        memo[item][capacity] = max(val[item] + topDownKnapsack(item-1, capacity - wt[item],memo), topDownKnapsack(item-1,capacity,memo))
+    return memo[item][capacity]
 
+
+def SET(n,i):
+    return n | (1<<i)
+
+def TEST(n,i):
+    return n & (1<<i)   
+
+def choosenItems(matDP):
+    row = len(matDP)-1
+    col = len(matDP[0])-1
+    msk = 0
+    while row:
+        if matDP[row][col] != matDP[row-1][col]:
+            msk = SET(msk, row)
+            col-=wt[row]
+        row-=1
+    return msk
+
+def printChoosen(msk):
+    includeItems= "Incluidos: "
+    for i in range(len(wt)):
+        if(TEST(msk,i)):
+            includeItems = includeItems + str(i) +","
+    print(includeItems[:len(includeItems)-1])
+
+def generateMemo(n,m):
+    mn = []
+    for _ in range(n):
+        fila = [0 for i in range(m)]
+        mn.append(fila)
+    return mn   
+
+def setFormat(items):
+    values = [0]
+    weigth = [0]
+    for i in items:
+        values = values+ [i[2] ]
+        weigth = weigth +[i[1]]
+    return weigth, values
+###############################################################################
+
+#items = [[1,5,20], [2,15,50], [3,10,60],[4,10,62],[5, 8, 40]]
+
+
+#print(setFormat(items))
 main(sys.argv)
+'''n = 30
+wt = [0, 5, 15, 10, 10, 8]
+val =  [0, 20, 50, 60, 62, 40]
+memo = generateMemo(len(val),n+1)
+print(topDownKnapsack(len(val)-1, n, memo))
+#for i in memo:
+#    print(i)
 
+printChoosen((choosenItems(memo)))'''
+#
