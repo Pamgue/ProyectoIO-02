@@ -4,6 +4,8 @@ from copy import deepcopy
 import time
 import numpy as np
 import itertools
+import datetime
+import matplotlib.pyplot as plt
 
 fileName = ""
 method = 0
@@ -11,45 +13,93 @@ N = 0
 max_weight =0
 val= []
 wt =[]
+times = []
 def main(arg):
-    global N, max_weight
+    global N, max_weight, times
     if(arg[1]== '1'):
+        
         print("Fuerza bruta")
         matrix, origin = processArg(arg)
         for j in range(0, num(N)): # se toma el tiempo
             if origin == 2:
                 print("Resultado:")
+                start_time = datetime.datetime.now()
                 itemsSlected,weigth,optimalValue =knapsack_brute_force(matrix,max_weight)
                 print("Beneficio máximo: " + str(optimalValue))
                 print("Incluidos: "+str(itemsSlected)[1:len(str(itemsSlected))-1])
+                print("Resultado:")
+                end_time = datetime.datetime.now()
+                time_diff = (end_time - start_time)
+                execution_time = time_diff.total_seconds() * 1000
+                times.append(execution_time)
+                print("Tiempo de ejecución: "+str(execution_time))
             else:
                 print("Resultado:")
                 max_weight=matrix[0][0]
                 numMatrix = setUpKnapSack(matrix)
+                start_time = datetime.datetime.now()
                 itemsSlected,weigth,optimalValue =knapsack_brute_force(numMatrix,max_weight)
                 print("Beneficio máximo: " + str(optimalValue))
                 print("Incluidos: "+str(itemsSlected)[1:len(str(itemsSlected))-1])
+                end_time = datetime.datetime.now()
+                time_diff = (end_time - start_time)
+                execution_time = time_diff.total_seconds() * 1000
+                times.append(execution_time)
+
+                print("Tiempo de ejecución: "+str(execution_time))
+        suma = 0
+        for i in times:
+            suma = suma + i
+        suma =  suma/len(times)
+        print("Tiempor promedio de ejecución: "+str(suma))
+        plt.plot(times)
+        plt.ylabel('Tiempo de ejecución')
+        plt.xlabel('Iteración')
+        plt.show()
+        
     elif(arg[1] == '2'):
         print("Bottom up")
         matrix, origin = processArg(arg)
         for j in range(0, num(N)): # se toma el tiempo
             if origin == 2:
-                
+                start_time = datetime.datetime.now()
                 V = dynamicKnapSack(max_weight, matrix, len(matrix))
                 print("Beneficio máximo: "+ str(V[len(matrix)][max_weight]))
                 
                 itemSelected,wtf=  findElements(V, max_weight,len(matrix), matrix)
                 print("Incluidos: "+str(itemSelected)[1:len(str(itemSelected))-1])
+                end_time = datetime.datetime.now()
+                time_diff = (end_time - start_time)
+                execution_time = time_diff.total_seconds() * 1000
+                times.append(execution_time)
+                print("Tiempo de ejecución: "+str(execution_time))
+            
 
             else:
                 numMatrix = setUpKnapSack(matrix)
                 max_weight=matrix[0][0]
+                start_time = datetime.datetime.now()
                 V = dynamicKnapSack(max_weight, numMatrix, len(numMatrix))
                 print("Beneficio máximo: "+ str(V[len(numMatrix)][max_weight]))
                 
                 itemSelected,wtf=  findElements(V, max_weight,len(numMatrix), numMatrix)
                 print("Incluidos: "+str(itemSelected)[1:len(str(itemSelected))-1])
+                end_time = datetime.datetime.now()
+                time_diff = (end_time - start_time)
+                execution_time = time_diff.total_seconds() * 1000
+                times.append(execution_time)
+                print("Tiempo de ejecución: "+str(execution_time))
+        suma = 0
+        for i in times:
+            suma = suma + i
+        suma =  suma/len(times)
+        print("Tiempor promedio de ejecución: "+str(suma))
+        plt.plot(times)
+        plt.ylabel('Tiempo de ejecución')
+        plt.xlabel('Iteración')
+        plt.show()
     elif (arg[1]== '3'):
+        
         global val, wt
         print("top-down") 
         matrix, origin = processArg(arg)
@@ -57,8 +107,14 @@ def main(arg):
             if origin == 2:
                 val, wt = setFormat(matrix)
                 memo = generateMemo(len(val),max_weight+1)
+                start_time = datetime.datetime.now()
                 print("Beneficio máximo:" + str(topDownKnapsack((len(val)-1), max_weight, memo))) 
                 printChoosen((choosenItems(memo)))
+                end_time = datetime.datetime.now()
+                time_diff = (end_time - start_time)
+                execution_time = time_diff.total_seconds() * 1000
+                times.append(execution_time)
+                print("Tiempo de ejecución: "+str(execution_time))
 
             else:
                 numMatrix = setUpKnapSack(matrix)
@@ -67,9 +123,23 @@ def main(arg):
                 wt,val  = setFormat(numMatrix)
             
                 memo = generateMemo(len(val),max_weight+1)
+                start_time = datetime.datetime.now()
                 print("Beneficio máximo:" + str(topDownKnapsack((len(val)-1), max_weight, memo))) 
                 printChoosen((choosenItems(memo)))
-                
+                end_time = datetime.datetime.now()
+                time_diff = (end_time - start_time)
+                execution_time = time_diff.total_seconds() * 1000
+                times.append(execution_time)
+                print("Tiempo de ejecución: "+str(execution_time))
+        suma = 0
+        for i in times:
+            suma = suma + i
+        suma =  suma/len(times)
+        print("Tiempor promedio de ejecución: "+str(suma))
+        plt.plot(times)
+        plt.ylabel('Tiempo de ejecución')
+        plt.xlabel('Iteración')
+        plt.show()
     else:
         print("Metodo no implementado")
 
@@ -147,9 +217,12 @@ def setUpKnapSack(matrix):
 
 def build_items(n, w, v):
     res= []
+    rand.seed(time.time())
     for i in range(n):
         res.append((i, rand.randint(w[0], w[1]), rand.randint(v[0], v[1])))
 
+    print(max_weight)
+    print(res)
     return res
 
 def powerset(items):
