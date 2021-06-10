@@ -62,23 +62,30 @@ def num(s):
     except ValueError:
         return float(s)
 
+
+''' Entradas: lista que representa la mina, iteraciones y cual algoritmo va a recorrer (1 o 2)
+    1 = Fuerza bruta
+    2 = Dinamica
+'''
 def checkTime(mine,times,function):
-    N = len(mine)
-    M = len(mine[0])
+    N = len(mine) #filas de la mina
+    M = len(mine[0]) #columnas de la mina
     total_time = 0
     for i in range(1,times+1):
   
-        start_time = datetime.datetime.now()
+        start_time = datetime.datetime.now() ##inicia el tiempo
         if(function==2):
             dp,route = topDownGoldMine(mine, N, M)
         else:
             max,route = bruteForce(mine, N, M)
-        end_time = datetime.datetime.now()
-        time_diff = (end_time - start_time)
-        execution_time = time_diff.total_seconds() * 1000
+
+
+        end_time = datetime.datetime.now() 
+        time_diff = (end_time - start_time) #se resta para obtener el intervalo de tiempo
+        execution_time = time_diff.total_seconds() * 1000 # se multiplica por 1000 para convertirlo a ms
 
         #print('Iteration ' + str(i) + ' time: ' + str(execution_time))
-        total_time += execution_time
+        total_time += execution_time #se guarda el tiempo de la iteracion actual
 
     if(function==2):
         printTopDown(dp, route, N, M)
@@ -86,14 +93,19 @@ def checkTime(mine,times,function):
         printBruteForce(max,route,M)
         
     print('--------------------------------------------------')
-    print('Average Execution Time: ' + str(total_time/times))
+    print('Average Execution Time: ' + str(total_time/times)) ##se imprime el tiempo promedio de ejecucion de las iteraciones
 
+
+'''
+Revise el comando separado por espacios en una lista
+'''
 def main(args):
     global I
-    if(args[1] == '1'): #bruteForce
+    if(args[1] == '1'): #bruteForce 
         mine = processArg(args)
         if(type(mine)==str):
-            return mine
+            return mine #retorna el mensaje de error
+        #sino procede a correr el algoritmo correspondiente
         checkTime(mine, I, 1)
     elif(args[1] == '2'): #topDown
         mine = processArg(args)
@@ -105,7 +117,11 @@ def main(args):
          return "Metodo no implementado"
         
 
-
+'''
+    Verifica si el largo de la data corresponde a 5 u 8
+    5 = se lee la entrada de datos de la mina mediante un archivo
+    8 = se generan los valores aleatorios
+'''
 def processArg(data):
     global fileName, I #N iteraciones
     if(len(data)==5): # con archivo
@@ -117,31 +133,34 @@ def processArg(data):
             listInputs = readFile()
             return generateMineWithFile(listInputs)
     elif(len(data) == 8):
-        N = num(data[3])
-        M = num(data[4])
-        min_value = num(data[5])
-        max_value = num(data[6])
+        N = num(data[3]) #representa las filas de la mina
+        M = num(data[4]) #columnas de la mina
+        min_value = num(data[5]) #valor minimo de oro
+        max_value = num(data[6]) #valor maximo de oro
         I = num(data[7])
         if(N <= 0 or M <= 0 or min_value < 0 or max_value <= 0 or max_value < min_value or I <= 0):
-            return 'Parametros incorrectos'
+            return 'Parametros incorrectos' #se verifica que no hayan valores negativos  y retorna el mensaje de error
         else:
             return generateRandomMine(N, M, min_value, max_value)
 
-
+'''
+ Funcion que determina un valor maximo pero ademas retorna el indice del valor maximo,
+'''
 def max_aux(aux,N):
-
     max = -10000
     index = -1
-    for i in range(0,N):
-        if(aux[i] > max):
-  
-            
-            max = aux[i]
-            index = i
+    for i in range(0,N): ##se recorre el arreglo 
+        if(aux[i] > max): ##si el elemento actual es el mayor
 
-    return index,max
+            max = aux[i] #el nuevo maximo es el elemento iterado
+            index = i #se guarda su indice
+
+    return index,max #se retorna el maximo y su indice
 
 
+'''
+Funcion para llenar la matriz de memo y las rutas
+'''
 def fill(row,col):
     memo = []
     route = []
@@ -153,7 +172,6 @@ def fill(row,col):
             route_aux.append([0])
         memo.append(memo_aux)
         route.append(route_aux)
-
     return memo,route
 
 def bottomUpGoldMine(mine,row,col):
@@ -214,34 +232,34 @@ def bruteForceAux(mine,i,j,N,M,route):
         return 0
 
     elif(j==0):
-        return mine[i][j]
+        return mine[i][j] ###retorne el caso base, columna 0
     else:
 
-        left_down = i+1
-        left_up = i-1
+        left_down = i+1 ##superior izquierda
+        left_up = i-1 ##superior derecha
 
         aux = [bruteForceAux(mine, left_down, j-1, N, M,route),bruteForceAux(mine,i, j-1, N, M,route),bruteForceAux(mine, left_up, j-1, N, M,route)]
 
         aux_index,max_value = max_aux(aux,3)
  
-        route_aux = i+indexes[aux_index]
+        route_aux = i+indexes[aux_index] #se guarda la ruta
 
         route[i][j] = route[route_aux][j-1]+[route_aux]
 
         return mine[i][j] + max_value
 
 def bruteForce(mine,N,M):
-    solution = []
+    solution = [] 
     x,route = fill(N, M)
-    for i in range(N):
-        solution.append(bruteForceAux(mine, i, M-1, N, M,route))
+    for i in range(N): ###se recorre cada posible punto de partida
+        solution.append(bruteForceAux(mine, i, M-1, N, M,route)) ###se guardan todas las rutas
 
     #print(solution)
-    max_index, max_value = max_aux(solution,N)
+    max_index, max_value = max_aux(solution,N) ###se elige la ruta con mayor cantidad de oror
    
 
-    final_route = route[max_index][M-1]
-    final_route  = final_route[1:] + [max_index]
+    final_route = route[max_index][M-1] ###Se agrega a la ruta el ultimo punto que vista
+    final_route  = final_route[1:] + [max_index] 
 
     return max_value,final_route
     #print(final_route)
@@ -280,30 +298,32 @@ def printTopDown(dp,route,N,M):
     
 
 def dp_max(mine,dp,i,j,N,M,route):
-    indexes = [1,0,-1]
+    indexes = [1,0,-1] ###indices para elegir si se mueve a la izquierda superior, izquierda, izquierda inferior 
     
     if(i < 0 or i == N): #si no hay diagonales retorne 0
         return 0
 
-    elif(j == 0):
-        dp[i][j] = mine[i][j]
+    elif(j == 0): ###si se llega a la primera columna seria un caso base
+        dp[i][j] = mine[i][j] ### la maxima ruta es este valor en la mina[i][j]
 
-    elif(dp[i][j]!=-1000000):
-        return dp[i][j]
+    elif(dp[i][j]!=-1000000): ###si ya esta calculado el dp para este
+
+        return dp[i][j] #Se retorna 
 
     else:
 
-        left_down = i+1
-        left_up = i-1
+        left_down = i+1 ###se mueve a la izquierda inferior
+        left_up = i-1 #se mueve a la izquierda superior
 
         aux = [dp_max(mine, dp, left_down, j-1, N, M,route),dp_max(mine, dp, i, j-1, N, M,route),dp_max(mine, dp, left_up, j-1, N, M,route)]
+        ###se guardan los 3 posibles caminos
 
-        aux_index,max_value = max_aux(aux,3)
+        aux_index,max_value = max_aux(aux,3) #se elige el maximo y su indice
  
-        route_aux = i+indexes[aux_index]
+        route_aux = i+indexes[aux_index] # se guarda la ruta actual de este
 
-        route[i][j] = route[route_aux][j-1]+[route_aux]
-        dp[i][j] = mine[i][j] + max_value
+        route[i][j] = route[route_aux][j-1]+[route_aux] 
+        dp[i][j] = mine[i][j] + max_value # el dp en [i,j] es el valor actual de la mina en [i,j] + las llamadas recursivas
 
     return dp[i][j]
 
