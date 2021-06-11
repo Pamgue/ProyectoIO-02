@@ -78,6 +78,7 @@ def main(arg):
             else:
                 numMatrix = setUpKnapSack(matrix)
                 max_weight=matrix[0][0]
+                print(setFormat(numMatrix))
                 start_time = datetime.datetime.now()
                 V = dynamicKnapSack(max_weight, numMatrix, len(numMatrix))
                 print("Beneficio máximo: "+ str(V[len(numMatrix)][max_weight]))
@@ -203,7 +204,7 @@ def formatMatrix(matrix):
 
 def setUpKnapSack(matrix):
     global max_weight
-    currentMatrix = matrix[1:];
+    currentMatrix = matrix[1:]
     newMatrix=[]
     n = len(currentMatrix)
     currentId = 1
