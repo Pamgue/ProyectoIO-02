@@ -32,7 +32,7 @@ def main(arg):
                 time_diff = (end_time - start_time)
                 execution_time = time_diff.total_seconds() * 1000
                 times.append(execution_time)
-                print("Tiempo de ejecución: "+str(execution_time))
+                #print("Tiempo de ejecución: "+str(execution_time))
             else:
                 print("Resultado:")
                 max_weight=matrix[0][0]
@@ -46,16 +46,16 @@ def main(arg):
                 execution_time = time_diff.total_seconds() * 1000
                 times.append(execution_time)
 
-                print("Tiempo de ejecución: "+str(execution_time))
+                #print("Tiempo de ejecución: "+str(execution_time))
         suma = 0
         for i in times:
             suma = suma + i
         suma =  suma/len(times)
         print("Tiempor promedio de ejecución: "+str(suma))
-        plt.plot(times)
+        '''plt.plot(times)
         plt.ylabel('Tiempo de ejecución')
         plt.xlabel('Iteración')
-        plt.show()
+        plt.show()'''
         
     elif(arg[1] == '2'):
         print("Bottom up")
@@ -72,7 +72,7 @@ def main(arg):
                 time_diff = (end_time - start_time)
                 execution_time = time_diff.total_seconds() * 1000
                 times.append(execution_time)
-                print("Tiempo de ejecución: "+str(execution_time))
+                #print("Tiempo de ejecución: "+str(execution_time))
             
 
             else:
@@ -89,16 +89,16 @@ def main(arg):
                 time_diff = (end_time - start_time)
                 execution_time = time_diff.total_seconds() * 1000
                 times.append(execution_time)
-                print("Tiempo de ejecución: "+str(execution_time))
+                #print("Tiempo de ejecución: "+str(execution_time))
         suma = 0
         for i in times:
             suma = suma + i
         suma =  suma/len(times)
-        print("Tiempor promedio de ejecución: "+str(suma))
+        '''print("Tiempor promedio de ejecución: "+str(suma))
         plt.plot(times)
         plt.ylabel('Tiempo de ejecución')
         plt.xlabel('Iteración')
-        plt.show()
+        plt.show()'''
     elif (arg[1]== '3'):
         
         global val, wt
@@ -115,7 +115,7 @@ def main(arg):
                 time_diff = (end_time - start_time)
                 execution_time = time_diff.total_seconds() * 1000
                 times.append(execution_time)
-                print("Tiempo de ejecución: "+str(execution_time))
+                #print("Tiempo de ejecución: "+str(execution_time))
 
             else:
                 numMatrix = setUpKnapSack(matrix)
@@ -131,16 +131,16 @@ def main(arg):
                 time_diff = (end_time - start_time)
                 execution_time = time_diff.total_seconds() * 1000
                 times.append(execution_time)
-                print("Tiempo de ejecución: "+str(execution_time))
+                #print("Tiempo de ejecución: "+str(execution_time))
         suma = 0
         for i in times:
             suma = suma + i
         suma =  suma/len(times)
         print("Tiempor promedio de ejecución: "+str(suma))
-        plt.plot(times)
+        '''plt.plot(times)
         plt.ylabel('Tiempo de ejecución')
         plt.xlabel('Iteración')
-        plt.show()
+        plt.show()'''
     else:
         print("Metodo no implementado")
 
@@ -223,7 +223,7 @@ def build_items(n, w, v):
         res.append((i, rand.randint(w[0], w[1]), rand.randint(v[0], v[1])))
 
     print(max_weight)
-    print(res)
+
     return res
 
 def powerset(items):
